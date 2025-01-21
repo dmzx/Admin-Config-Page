@@ -1,0 +1,7 @@
+services:
+    _defaults:
+        autowire: true
+        bind:
+            $root_path: '%core.root_path%'
+    dmzx.adminconfigpage.controller.acp:
+        class: dmzx\adminconfigpage\controller\acp_controller

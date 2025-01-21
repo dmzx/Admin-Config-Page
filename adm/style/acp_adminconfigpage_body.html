@@ -1,0 +1,75 @@
+{% include 'overall_header.html' %}
+
+<h1>{{ lang('ACP_ADMINCONFIGPAGE_ADMIN_TITLE') }}</h1> <p><img src="https://img.shields.io/badge/{{ lang('Version') }}-{{ ADMINCONFIGPAGE_VERSION }}-green.svg?style=plastic" /></p>
+
+{% if S_ERROR %}
+	<div class="errorbox">
+		<h3>{{ lang('WARNING') }}</h3>
+		<p>{{ ERROR_MSG }}</p>
+	</div>
+{% endif %}
+
+	<h1>{{ lang('CONFIG_LIST') }}</h1>
+	<p>{{ lang('CONFIG_LIST_EXPLAIN') }}</p>
+	<form id="dmzx_adminconfigpage_acp" name="dmzx_adminconfigpage_acp" method="post" action="{{ U_ACTION }}">
+		<fieldset class="jumpbox" style="line-height: 1.8em;">
+			<label for="limit">{{ lang('LIMIT') }}:</label>
+			<input name="limit" type="text" size="3" value="{{ LIMIT }}" />
+			<label for="display">{{ lang('FILTER') }}:</label>
+			<select name="display" id="display" onchange="document.forms['display_form'].submit()">
+			{% for options in loops.options %}
+				<option value="{{ options.OPTION }}"{% if options.SELECTED %} selected="selected"{% endif %}>{{ options.LANG }}</option>
+			{% endfor %}
+			</select>
+			&nbsp;<input type="submit" value="{{ lang('GO') }}" class="button2" />
+		</fieldset>
+	</form>
+	{% if loops.row|length %}
+	<form id="dmzx_adminconfigpage_acp" name="dmzx_adminconfigpage_acp" method="post" action="{{ U_ACTION }}">
+	<table cellspacing="1">
+		<tr>
+			<th>{{ lang('CONFIG_PURPOSE') }}</th>
+			<th>{{ lang('CONFIG_NAME') }}</th>
+			<th>{{ lang('CONFIG_VALUE') }}</th>
+			<th class="mark">{{ lang('IS_DYNAMIC') }}</th>
+		</tr>
+		{% for row in loops.row %}
+		<tr class="{% if row.S_ROW_COUNT is even %}row1{% else %}row2{% endif %}">
+			<td style="text-align: right;">{{ row.CONFIG_PURPOSE }}&nbsp;</td>
+			<td style="font-weight:bold">{{ row.CONFIG_NAME }}{% if row.HUMAN_DATE %}&nbsp;<p style="text-align: right; color:#006830; font-weight:normal">{{ row.HUMAN_DATE }}</p>{% endif %}</td>
+			<td>
+				{% if row.S_BOOL %}
+					<input type="radio" name="config[{{ row.CONFIG_NAME }}]" value="1" {{ row.S_CHECKED }} class="radio" /> {{ lang('YES') }}&nbsp;
+					<input type="radio" name="config[{{ row.CONFIG_NAME }}]" value="0" {{ row.S_NO_CHECKED }} class="radio" /> {{ lang('NO') }}
+				{% else %}
+					<input id="{{ row.CONFIG_NAME }}" name="config[{{ row.CONFIG_NAME }}]" maxlength="255" size="44" value="{{ row.CONFIG_VALUE }}" type="text">
+				{% endif %}
+			</td>
+			<td>
+				<input type="radio" name="is_dinamic[{{ row.CONFIG_NAME }}]" value="1" {{ row.IS_DINAMIC_CHECKED }} class="radio" /> {{ lang('YES') }}&nbsp;
+				<input type="radio" name="is_dinamic[{{ row.CONFIG_NAME }}]" value="0" {{ row.NO_DINAMIC_CHECKED }} class="radio" /> {{ lang('NO') }}
+			</td>
+		</tr>
+		{% endfor %}
+		</table>
+		<div class="pagination">
+			<b>{{ lang('TOTAL_ITEMS') }}:</b> {{ TOTAL_ITEMS }}
+			{% if loops.pagination|length %}
+				{% INCLUDE 'pagination.html' %}
+			{% else %}
+				&bull; {{ PAGE_NUMBER }}
+			{% endif %}
+		</div>
+	<fieldset class="jumpbox" style="text-align: right;">
+		<label for="sa">{{ lang('CLICK_HERE_TO_CHANGE') }}</label> <input class="button1" type="submit" id="submit" name="submit" value="{{ lang('SUBMIT') }}" />
+		{{ S_FORM_TOKEN }}
+	</fieldset>
+	</form>
+	{% else %}
+	<fieldset>
+		<legend>{{ lang('NO_CONFIG_TITLE') }}</legend>
+		<p>{{ lang('NO_CONFIG_TEXT') }}</p>
+	</fieldset>
+	{% endif %}
+
+{% include 'overall_footer.html' %}
